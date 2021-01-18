@@ -8,6 +8,7 @@ import { Update } from '@ngrx/entity';
 import { AppState } from '../../app.reducer';
 import { Course } from '../model/course';
 import { courseUpdated } from '../courses.actions';
+import { CourseEntityService } from '../services/course-entity.service';
 
 @Component({
   selector: 'app-course-dialog',
@@ -19,6 +20,7 @@ export class EditCourseDialogComponent {
     private formBuilder: FormBuilder,
     private dialogRef: MatDialogRef<EditCourseDialogComponent>,
     private store: Store<AppState>,
+    private courseEntityService: CourseEntityService,
     @Inject(MAT_DIALOG_DATA) data: any
   ) {
     this.dialogTitle = data.dialogTitle;
@@ -57,11 +59,13 @@ export class EditCourseDialogComponent {
       ...this.course,
       ...this.form.value
     };
-    const update: Update<Course> = {
-      id: course.id,
-      changes: course
-    };
-    this.store.dispatch(courseUpdated({ update }));
-    this.dialogRef.close();
+    if (this.mode === 'update') {
+      this.courseEntityService.update(course);
+      this.dialogRef.close();
+    } else if (this.mode === 'create') {
+      this.courseEntityService.add(course).subscribe(_ => {
+        this.dialogRef.close();
+      });
+    }
   }
 }

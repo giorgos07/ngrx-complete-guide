@@ -40,6 +40,7 @@ const routes: Routes = [
     BrowserAnimationsModule,
     BrowserModule,
     EffectsModule.forRoot([]),
+    EntityDataModule.forRoot({}),
     HttpClientModule,
     MatIconModule,
     MatListModule,

@@ -6,7 +6,7 @@ export function getAllCourses(req: Request, res: Response) {
   console.log('Retrieving courses data ...');
   setTimeout(() => {
     res.status(200).json({ payload: Object.values(COURSES) });
-  }, 1000);
+  }, 500);
 }
 
 export function getCourseByUrl(req: Request, res: Response) {
@@ -15,5 +15,5 @@ export function getCourseByUrl(req: Request, res: Response) {
   const course = courses.find((x: Course) => x.url === courseUrl);
   setTimeout(() => {
     res.status(200).json(course);
-  }, 1000);
+  }, 500);
 }

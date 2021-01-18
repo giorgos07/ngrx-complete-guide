@@ -20,10 +20,11 @@ import { RouterModule, Routes } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { EntityDataService, EntityDefinitionService, EntityMetadataMap } from '@ngrx/data';
 import { StoreModule } from '@ngrx/store';
-import { compareCourses, Course } from './model/course';
-import { compareLessons, Lesson } from './model/lesson';
+import { compareCourses } from './model/course';
 import { CourseComponent } from './course/course.component';
+import { CourseEntityService } from './services/course-entity.service';
 import { CoursesCardListComponent } from './courses-card-list/courses-card-list.component';
+import { CoursesDataService } from './services/courses-data.service';
 import { CoursesEffects } from './courses.effects';
 import { CoursesHttpService } from './services/courses-http.service';
 import { coursesReducer } from './courses.reducer';
@@ -32,14 +33,23 @@ import { EditCourseDialogComponent } from './edit-course-dialog/edit-course-dial
 import { HomeComponent } from './home/home.component';
 
 export const coursesRoutes: Routes = [{
-    path: '',
-    component: HomeComponent,
-    resolve: { courses: CoursesResolver }
-  }, {
-    path: ':courseUrl',
-    component: CourseComponent
-  }
+  path: '',
+  component: HomeComponent,
+  resolve: { courses: CoursesResolver }
+}, {
+  path: ':courseUrl',
+  component: CourseComponent
+}
 ];
+
+const entityMetadata: EntityMetadataMap = {
+  course: {
+    sortComparer: compareCourses,
+    entityDispatcherOptions: {
+      optimisticUpdate: true
+    }
+  }
+};
 
 @NgModule({
   imports: [
@@ -77,8 +87,19 @@ export const coursesRoutes: Routes = [{
   ],
   entryComponents: [EditCourseDialogComponent],
   providers: [
+    CourseEntityService,
+    CoursesDataService,
     CoursesHttpService,
     CoursesResolver
   ]
 })
-export class CoursesModule { }
+export class CoursesModule {
+  constructor(
+    private entityDefinitionService: EntityDefinitionService,
+    private entityDataService: EntityDataService,
+    private coursesDataService: CoursesDataService
+  ) {
+    this.entityDefinitionService.registerMetadataMap(entityMetadata);
+    this.entityDataService.registerService('course', this.coursesDataService);
+  }
+}

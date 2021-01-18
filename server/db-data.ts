@@ -51,14 +51,14 @@ export const COURSES: any = {
   5: {
     id: 5,
     description: 'Angular for Beginners',
-    longDescription: 'Establish a solid layer of fundamentals, learn what's under the hood of Angular',
+    longDescription: 'Establish a solid layer of fundamentals, learn what's under the hood of Angular.',
     iconUrl: 'https://angular-academy.s3.amazonaws.com/thumbnails/angular2-for-beginners-small-v2.png',
     category: 'BEGINNER',
     lessonsCount: 10,
     seqNo: 5,
     url: 'angular-for-beginners'
   },
-*/
+  */
   12: {
     id: 12,
     description: 'Angular Testing Course',

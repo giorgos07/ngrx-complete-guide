@@ -1,10 +1,10 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { Course } from '../model/course';
-import { Lesson } from '../model/lesson';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { Course } from '../model/course';
+import { Lesson } from '../model/lesson';
 
 @Injectable()
 export class CoursesHttpService {
@@ -27,7 +27,6 @@ export class CoursesHttpService {
                 .set('pageSize', pageSize.toString())
         });
     }
-
 
     public saveCourse(courseId: number | string, changes: Partial<Course>) {
         return this.http.put('/api/course/' + courseId, changes);
