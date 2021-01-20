@@ -1,20 +1,23 @@
 import { ActivatedRoute } from '@angular/router';
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 
-import { concatMap, delay, filter, first, map, shareReplay, tap, withLatestFrom } from 'rxjs/operators';
-import { Course } from '../model/course';
-import { CoursesHttpService } from '../services/courses-http.service';
-import { Lesson } from '../model/lesson';
+import { delay, map, tap, withLatestFrom } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { Course } from '../model/course';
+import { CourseEntityService } from '../services/course-entity.service';
+import { Lesson } from '../model/lesson';
+import { LessonEntityService } from '../services/lesson-entity.service';
 
 @Component({
   selector: 'app-course',
   templateUrl: './course.component.html',
-  styleUrls: ['./course.component.css']
+  styleUrls: ['./course.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CourseComponent implements OnInit {
   constructor(
-    private coursesService: CoursesHttpService,
+    private courseEntityService: CourseEntityService,
+    private lessonEntityService: LessonEntityService,
     private route: ActivatedRoute
   ) { }
 
@@ -25,13 +28,28 @@ export class CourseComponent implements OnInit {
   public loading$: Observable<boolean>;
 
   public ngOnInit(): void {
+    this.loading$ = this.lessonEntityService.loading$.pipe(delay(0));
     const courseUrl = this.route.snapshot.paramMap.get('courseUrl');
-    this.course$ = this.coursesService.findCourseByUrl(courseUrl);
-    this.lessons$ = this.course$.pipe(
-      concatMap(course => this.coursesService.findLessons(course.id)),
-      tap(console.log)
+    this.course$ = this.courseEntityService.entities$.pipe(
+      map(courses => courses.find(course => course.url === courseUrl))
+    );
+    this.lessons$ = this.lessonEntityService.entities$.pipe(
+      withLatestFrom(this.course$),
+      tap(([_, course]) => {
+        if (this.nextPage === 0) {
+          this.loadLessonsPage(course)
+        }
+      }),
+      map(([lessons, course]) => lessons.filter(lesson => lesson.courseId === course.id))
     );
   }
 
-  public loadLessonsPage(course: Course): void { }
+  public loadLessonsPage(course: Course): void {
+    this.lessonEntityService.getWithQuery({
+      'courseId': course.id.toString(),
+      'pageNumber': this.nextPage.toString(),
+      'pageSize': '3'
+    });
+    this.nextPage += 1;
+  }
 }

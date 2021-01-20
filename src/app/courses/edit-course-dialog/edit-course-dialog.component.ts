@@ -1,19 +1,18 @@
-import { Component, Inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { Update } from '@ngrx/entity';
 import { AppState } from '../../app.reducer';
 import { Course } from '../model/course';
-import { courseUpdated } from '../courses.actions';
 import { CourseEntityService } from '../services/course-entity.service';
 
 @Component({
   selector: 'app-course-dialog',
   templateUrl: './edit-course-dialog.component.html',
-  styleUrls: ['./edit-course-dialog.component.css']
+  styleUrls: ['./edit-course-dialog.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditCourseDialogComponent {
   constructor(
